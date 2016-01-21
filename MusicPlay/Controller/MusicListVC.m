@@ -12,6 +12,9 @@
 #import "MBProgressHUD.h"
 #import "MusicModel.h"
 #import "UIImageView+WebCache.h"
+#import "FXBlurView.h"
+
+
 
 @interface MusicListVC ()<UITableViewDataSource, UITableViewDelegate>
 
@@ -46,11 +49,18 @@
 //    backImage.image = [UIImage imageNamed:@"1"];
     
     // visual 光学的 视觉的
-    UIVisualEffectView *visualView = [[UIVisualEffectView alloc] initWithFrame:self.view.bounds];
+//    UIVisualEffectView *visualView = [[UIVisualEffectView alloc] initWithFrame:self.view.bounds];
     
     // blur模糊的
-    visualView.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-    [self.backImageView addSubview:visualView];
+//    visualView.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+//    [self.backImageView addSubview:visualView];
+
+
+    FXBlurView *fxView = [[FXBlurView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    fxView.dynamic = YES;
+    fxView.blurRadius = 40;
+    fxView.tintColor = [UIColor clearColor];
+//    [self.view addSubview:fxView];
     
     
     
@@ -64,9 +74,10 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:customBtn];
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 64) style:UITableViewStylePlain];
-    self.tableView.backgroundColor = [UIColor cyanColor];
+    self.tableView.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.tableView];
     self.tableView.backgroundView = self.backImageView;
+    [self.backImageView addSubview:fxView];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     
@@ -99,7 +110,7 @@
             MusicModel *model = [MusicModel modelWithDic:arr[i]];
             [self.musicArr addObject:model];
         }
-        NSLog(@"self.modelArray.count____%ld", self.musicArr.count);
+        NSLog(@"self.modelArray.count____%ld", (unsigned long)self.musicArr.count);
         
         [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[self.musicArr[0] blurPicUrl]]];
         
@@ -181,14 +192,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[self.musicArr[indexPath.row] blurPicUrl]]];
-//    MusicCell *cell = 
     
 }
 
-- (void)tableView:(UITableView *)tableView didHighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    
-}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
