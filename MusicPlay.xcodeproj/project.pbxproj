@@ -57,6 +57,8 @@
 		3F1A9D781C50B76600131664 /* UIImageView+HighlightedWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D661C50B76600131664 /* UIImageView+HighlightedWebCache.m */; settings = {ASSET_TAGS = (); }; };
 		3F1A9D791C50B76600131664 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D681C50B76600131664 /* UIImageView+WebCache.m */; settings = {ASSET_TAGS = (); }; };
 		3F1A9D7A1C50B76600131664 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D6A1C50B76600131664 /* UIView+WebCacheOperation.m */; settings = {ASSET_TAGS = (); }; };
+		3FF307BC1C50C93C00C93AD3 /* MusicCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FF307BB1C50C93C00C93AD3 /* MusicCell.m */; settings = {ASSET_TAGS = (); }; };
+		3FF307BF1C50CA2400C93AD3 /* MusicModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FF307BE1C50CA2400C93AD3 /* MusicModel.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +156,10 @@
 		3F1A9D681C50B76600131664 /* UIImageView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WebCache.m"; sourceTree = "<group>"; };
 		3F1A9D691C50B76600131664 /* UIView+WebCacheOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+WebCacheOperation.h"; sourceTree = "<group>"; };
 		3F1A9D6A1C50B76600131664 /* UIView+WebCacheOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+WebCacheOperation.m"; sourceTree = "<group>"; };
+		3FF307BA1C50C93C00C93AD3 /* MusicCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicCell.h; sourceTree = "<group>"; };
+		3FF307BB1C50C93C00C93AD3 /* MusicCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MusicCell.m; sourceTree = "<group>"; };
+		3FF307BD1C50CA2400C93AD3 /* MusicModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicModel.h; sourceTree = "<group>"; };
+		3FF307BE1C50CA2400C93AD3 /* MusicModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MusicModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,6 +272,8 @@
 		3F1A9D0C1C50B2FF00131664 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				3FF307BD1C50CA2400C93AD3 /* MusicModel.h */,
+				3FF307BE1C50CA2400C93AD3 /* MusicModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -285,6 +293,8 @@
 		3F1A9D0E1C50B2FF00131664 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				3FF307BA1C50C93C00C93AD3 /* MusicCell.h */,
+				3FF307BB1C50C93C00C93AD3 /* MusicCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -519,6 +529,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F1A9CDC1C50B29F00131664 /* AppDelegate.m in Sources */,
+				3FF307BF1C50CA2400C93AD3 /* MusicModel.m in Sources */,
 				3F1A9D781C50B76600131664 /* UIImageView+HighlightedWebCache.m in Sources */,
 				3F1A9D791C50B76600131664 /* UIImageView+WebCache.m in Sources */,
 				3F1A9D771C50B76600131664 /* UIImage+WebP.m in Sources */,
@@ -529,6 +540,7 @@
 				3F1A9CD91C50B29F00131664 /* main.m in Sources */,
 				3F1A9D721C50B76600131664 /* SDWebImageManager.m in Sources */,
 				3F1A9D7A1C50B76600131664 /* UIView+WebCacheOperation.m in Sources */,
+				3FF307BC1C50C93C00C93AD3 /* MusicCell.m in Sources */,
 				3F1A9D741C50B76600131664 /* UIButton+WebCache.m in Sources */,
 				3F1A9D761C50B76600131664 /* UIImage+MultiFormat.m in Sources */,
 				3F1A9D461C50B67600131664 /* MBProgressHUD.m in Sources */,
@@ -769,6 +781,7 @@
 				3F1A9D031C50B29F00131664 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3F1A9D041C50B29F00131664 /* Build configuration list for PBXNativeTarget "MusicPlayTests" */ = {
 			isa = XCConfigurationList;
@@ -777,6 +790,7 @@
 				3F1A9D061C50B29F00131664 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3F1A9D071C50B29F00131664 /* Build configuration list for PBXNativeTarget "MusicPlayUITests" */ = {
 			isa = XCConfigurationList;
@@ -785,6 +799,7 @@
 				3F1A9D091C50B29F00131664 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
