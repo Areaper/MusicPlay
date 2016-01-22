@@ -25,7 +25,7 @@
 {
     for (UIView *view in self.view.subviews) {
         if (view.tag == 1000) {
-            [((MBProgressHUD *)view) hide:YES afterDelay:1];
+            [((MBProgressHUD *)view) hide:YES afterDelay:3];
         }
     }
 }

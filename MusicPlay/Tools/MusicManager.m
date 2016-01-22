@@ -7,8 +7,10 @@
 //
 
 #import "MusicManager.h"
-
+#import "UIViewController+HUD.h"
 #import "Reachability.h"
+#import "MusicListVC.h"
+#import "UIImageView+WebCache.h"
 
 
 
@@ -40,14 +42,39 @@
 //    }
 }
 
-- (void)requestDataWithBlock:(block1)block
+- (void)requestDataWithBlock:(block1)block withViewController:(UIViewController *)vc
 {
-    NSArray *arr = [NSArray arrayWithContentsOfURL:[NSURL URLWithString:@"http://project.lanou3g.com/teacher/UIAPI/MusicInfoList.plist"]];
-        for (int i = 0; i < arr.count; i++) {
-        MusicModel *model = [MusicModel modelWithDic:arr[i]];
-        [self.modelDataArray addObject:model];
+    if ([self isnetWork]) {
+        [vc showHUDwith:@"正在加载"];
+        
+        dispatch_queue_t concurrent = dispatch_queue_create("concurrent1", DISPATCH_QUEUE_CONCURRENT);
+        dispatch_async(concurrent, ^{
+            NSArray *arr = [NSArray arrayWithContentsOfURL:[NSURL URLWithString:@"http://project.lanou3g.com/teacher/UIAPI/MusicInfoList.plist"]];
+            for (int i = 0; i < arr.count; i++) {
+                MusicModel *model = [MusicModel modelWithDic:arr[i]];
+                [self.modelDataArray addObject:model];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    MusicListVC *musicListVC = (MusicListVC *)vc;
+                    
+                    
+                    [musicListVC.backImageView sd_setImageWithURL:[NSURL URLWithString:[self.modelDataArray[0] blurPicUrl]]];
+                    [musicListVC.tableView reloadData];
+                    
+                });
+                
+                
+            }
+        });
+        
+        [vc hideHUD];
+        
+        block();
     }
-    block();
+    else
+    {
+        [vc showHUDwhenDisconnectedWith:@"网络状况不好, 请检查网络"];
+    }
 }
 
 - (NSInteger)returnModelNumber

@@ -20,10 +20,6 @@
 
 @interface MusicListVC ()<UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic, strong) UIImageView *backImageView;
-
-@property (nonatomic, strong) UITableView *tableView;
-
 @property (nonatomic, strong) NSMutableArray *musicArr;
 
 @end
@@ -110,41 +106,16 @@
     
     MusicManager *manager = [MusicManager shareManager];
     [manager requestDataWithBlock:^{
-        [self showHUDwith:@"正在加载"];
         
-        
-        NSArray *arr = [NSArray arrayWithContentsOfURL:[NSURL URLWithString:@"http://project.lanou3g.com/teacher/UIAPI/MusicInfoList.plist"]];
-        
-        
-        
-        for (int i = 0; i < arr.count; i++) {
-            MusicModel *model = [MusicModel modelWithDic:arr[i]];
-            [self.musicArr addObject:model];
-        }
-        NSLog(@"self.modelArray.count____%ld", (unsigned long)self.musicArr.count);
         
         [self.tableView reloadData];
         
-        [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[self.musicArr[0] blurPicUrl]]];
-        
-        [self hideHUD];
-    }];
+    } withViewController:self];
     
-//    }
-//    else
-//    {
-//        [self showHUDwhenDisconnectedWith:@"网络状况不好, 请检查网络"];
-//    }
+
+    
     
 }
-
-//#pragma mark - TapHandle
-//- (void)RightBtnTapHandle
-//{
-//    
-//    
-//    
-//}
 
 #pragma mark - dataSource  TableViewDelegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
