@@ -13,6 +13,8 @@
 #import "MusicModel.h"
 #import "UIImageView+WebCache.h"
 #import "FXBlurView.h"
+#import "UIViewController+HUD.h"
+#import "MusicManager.h"
 
 
 
@@ -81,27 +83,36 @@
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     
-    // 下面这句话的作用: 当有导航的时候 00 点 顶着导航 2.没有导航的时候是顶着屏幕的00点
+    // 这个属性控制背景是否向四周延伸
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
+    // 下面这句话的作用: 当有导航的时候 00 点 顶着导航 2.没有导航的时候是顶着屏幕的00点
     self.navigationController.automaticallyAdjustsScrollViewInsets = YES;
     
     
-    // 不要横线
+    // 不要横线 全部分割线隐藏
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    // 或者
+    // 或者 下面这句只是把多余的分割线隐藏掉
 //    self.tableView.tableFooterView = [UIView new];
     
     // 注册
     [self.tableView registerClass:[MusicCell class] forCellReuseIdentifier:@"reuse"];
     
-    NSLog(@"isnet______%d", [self isnetWork]);
-    if ([self isnetWork]) {
-        MBProgressHUD *hud = [[MBProgressHUD alloc] initWithFrame:self.view.bounds];
-        hud.labelText = @"正在加载数据";
-        [hud show:YES];
-        [self.view addSubview:hud];
-        [hud hide:YES afterDelay:3];
+    
+//    if ([self isnetWork]) {
+//        MBProgressHUD *hud = [[MBProgressHUD alloc] initWithFrame:self.view.bounds];
+//        hud.labelText = @"正在加载数据";
+//        [hud show:YES];
+//        [self.view addSubview:hud];
+//        [hud hide:YES afterDelay:3];
+    
+
+    
+    MusicManager *manager = [MusicManager shareManager];
+    [manager requestDataWithBlock:^{
+        [self showHUDwith:@"正在加载"];
+        
+        
         NSArray *arr = [NSArray arrayWithContentsOfURL:[NSURL URLWithString:@"http://project.lanou3g.com/teacher/UIAPI/MusicInfoList.plist"]];
         
         
@@ -112,47 +123,39 @@
         }
         NSLog(@"self.modelArray.count____%ld", (unsigned long)self.musicArr.count);
         
+        [self.tableView reloadData];
+        
         [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[self.musicArr[0] blurPicUrl]]];
         
-        
-       
-        [hud hide:YES];
-        
-    }
-    else
-    {
-        MBProgressHUD *hud = [[MBProgressHUD alloc] initWithFrame:self.view.bounds];
-        hud.mode = MBProgressHUDModeText;
-        hud.labelText = @"网络状况不好, 请检查网络";
-        [hud show:YES];
-        [self.view addSubview:hud];
-        [hud hide:YES afterDelay:2];
-        
-    }
+        [self hideHUD];
+    }];
     
-    
-    
+//    }
+//    else
+//    {
+//        [self showHUDwhenDisconnectedWith:@"网络状况不好, 请检查网络"];
+//    }
     
 }
 
-#pragma mark - TapHandle
-- (void)RightBtnTapHandle
-{
-    
-    
-    
-}
+//#pragma mark - TapHandle
+//- (void)RightBtnTapHandle
+//{
+//    
+//    
+//    
+//}
 
 #pragma mark - dataSource  TableViewDelegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.musicArr.count;
+    return [[MusicManager shareManager] returnModelNumber];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MusicCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuse" forIndexPath:indexPath];
-    [cell cellWithModel:_musicArr[indexPath.row]];
+    [cell cellWithModel:[[MusicManager shareManager] returnModelWithIndexpath:indexPath.row]];
     cell.backgroundColor = [UIColor clearColor];
     return cell;
 }
@@ -162,37 +165,40 @@
     return 60;
 }
 
-#pragma mark - netWork
-- (BOOL)isnetWork
-{
-    Reachability *reach = [Reachability reachabilityWithHostName:@"www.baidu.com"];
-    BOOL isnetwork;
-    switch ([reach currentReachabilityStatus]) {
-        case NotReachable:
-            NSLog(@"没网络");
-            isnetwork = NO;
-            break;
-        case ReachableViaWiFi:
-//            NSLog(@"");
-            
-            isnetwork = YES;
-            break;
-        case ReachableViaWWAN:
+//#pragma mark - netWork
+//- (BOOL)isnetWork
+//{
+//    Reachability *reach = [Reachability reachabilityWithHostName:@"www.baidu.com"];
+//    BOOL isnetwork;
+//    switch ([reach currentReachabilityStatus]) {
+//        case NotReachable:
 //            NSLog(@"没网络");
-            
-            isnetwork = YES;
-            break;
-            
-        default:
-            break;
-    }
-    return isnetwork;
-}
+//            isnetwork = NO;
+//            break;
+//        case ReachableViaWiFi:
+////            NSLog(@"");
+//            
+//            isnetwork = YES;
+//            break;
+//        case ReachableViaWWAN:
+////            NSLog(@"没网络");
+//            
+//            isnetwork = YES;
+//            break;
+//            
+//        default:
+//            break;
+//    }
+//    return isnetwork;
+//}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[self.musicArr[indexPath.row] blurPicUrl]]];
+    [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[[[MusicManager shareManager] returnModelWithIndexpath:indexPath.row] blurPicUrl]]];
     
+    
+    // 点击之后 会有一个灰色渐变效果
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 

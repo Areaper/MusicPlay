@@ -57,6 +57,8 @@
 		3F1A9D781C50B76600131664 /* UIImageView+HighlightedWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D661C50B76600131664 /* UIImageView+HighlightedWebCache.m */; settings = {ASSET_TAGS = (); }; };
 		3F1A9D791C50B76600131664 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D681C50B76600131664 /* UIImageView+WebCache.m */; settings = {ASSET_TAGS = (); }; };
 		3F1A9D7A1C50B76600131664 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D6A1C50B76600131664 /* UIView+WebCacheOperation.m */; settings = {ASSET_TAGS = (); }; };
+		3F9DEF651C51BF7B00ED3411 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9DEF641C51BF7B00ED3411 /* UIViewController+HUD.m */; settings = {ASSET_TAGS = (); }; };
+		3F9DEF681C51C89700ED3411 /* MusicManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9DEF671C51C89700ED3411 /* MusicManager.m */; settings = {ASSET_TAGS = (); }; };
 		3FF307BC1C50C93C00C93AD3 /* MusicCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FF307BB1C50C93C00C93AD3 /* MusicCell.m */; settings = {ASSET_TAGS = (); }; };
 		3FF307BF1C50CA2400C93AD3 /* MusicModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FF307BE1C50CA2400C93AD3 /* MusicModel.m */; settings = {ASSET_TAGS = (); }; };
 		85732D11861429A04727CD3F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98DC99BD0BBEBB253DA5A4B1 /* libPods.a */; };
@@ -158,6 +160,10 @@
 		3F1A9D681C50B76600131664 /* UIImageView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WebCache.m"; sourceTree = "<group>"; };
 		3F1A9D691C50B76600131664 /* UIView+WebCacheOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+WebCacheOperation.h"; sourceTree = "<group>"; };
 		3F1A9D6A1C50B76600131664 /* UIView+WebCacheOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+WebCacheOperation.m"; sourceTree = "<group>"; };
+		3F9DEF631C51BF7B00ED3411 /* UIViewController+HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+HUD.h"; sourceTree = "<group>"; };
+		3F9DEF641C51BF7B00ED3411 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
+		3F9DEF661C51C89700ED3411 /* MusicManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicManager.h; sourceTree = "<group>"; };
+		3F9DEF671C51C89700ED3411 /* MusicManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MusicManager.m; sourceTree = "<group>"; };
 		3FF307BA1C50C93C00C93AD3 /* MusicCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicCell.h; sourceTree = "<group>"; };
 		3FF307BB1C50C93C00C93AD3 /* MusicCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MusicCell.m; sourceTree = "<group>"; };
 		3FF307BD1C50CA2400C93AD3 /* MusicModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicModel.h; sourceTree = "<group>"; };
@@ -288,6 +294,10 @@
 		3F1A9D0D1C50B2FF00131664 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				3F9DEF661C51C89700ED3411 /* MusicManager.h */,
+				3F9DEF671C51C89700ED3411 /* MusicManager.m */,
+				3F9DEF631C51BF7B00ED3411 /* UIViewController+HUD.h */,
+				3F9DEF641C51BF7B00ED3411 /* UIViewController+HUD.m */,
 				3F1A9D431C50B67600131664 /* MBProgressHUD.h */,
 				3F1A9D441C50B67600131664 /* MBProgressHUD.m */,
 				3F1A9D481C50B6F300131664 /* Reachability.h */,
@@ -613,6 +623,7 @@
 				3F1A9D6F1C50B76600131664 /* SDWebImageDecoder.m in Sources */,
 				3F1A9D701C50B76600131664 /* SDWebImageDownloader.m in Sources */,
 				3F1A9CD91C50B29F00131664 /* main.m in Sources */,
+				3F9DEF681C51C89700ED3411 /* MusicManager.m in Sources */,
 				3F1A9D721C50B76600131664 /* SDWebImageManager.m in Sources */,
 				3F1A9D7A1C50B76600131664 /* UIView+WebCacheOperation.m in Sources */,
 				3FF307BC1C50C93C00C93AD3 /* MusicCell.m in Sources */,
@@ -621,6 +632,7 @@
 				3F1A9D461C50B67600131664 /* MBProgressHUD.m in Sources */,
 				3F1A9D711C50B76600131664 /* SDWebImageDownloaderOperation.m in Sources */,
 				3F1A9D751C50B76600131664 /* UIImage+GIF.m in Sources */,
+				3F9DEF651C51BF7B00ED3411 /* UIViewController+HUD.m in Sources */,
 				3F1A9D6E1C50B76600131664 /* SDWebImageCompat.m in Sources */,
 				3F1A9D6C1C50B76600131664 /* NSData+ImageContentType.m in Sources */,
 				3F1A9D471C50B67600131664 /* Reachability.m in Sources */,
