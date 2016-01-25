@@ -15,6 +15,7 @@
 #import "FXBlurView.h"
 #import "UIViewController+HUD.h"
 #import "MusicManager.h"
+#import "PlayMusicVC.h"
 
 
 
@@ -25,6 +26,8 @@
 @end
 
 @implementation MusicListVC
+
+#pragma mark - setter and getter
 
 - (NSMutableArray *)musicArr
 {
@@ -39,6 +42,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"音乐播放器";
+    
+//    UISlider
     
     
     
@@ -58,9 +63,6 @@
     fxView.dynamic = YES;
     fxView.blurRadius = 40;
     fxView.tintColor = [UIColor clearColor];
-//    [self.view addSubview:fxView];
-    
-    
     
     self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
     
@@ -93,14 +95,7 @@
     
     // 注册
     [self.tableView registerClass:[MusicCell class] forCellReuseIdentifier:@"reuse"];
-    
-    
-//    if ([self isnetWork]) {
-//        MBProgressHUD *hud = [[MBProgressHUD alloc] initWithFrame:self.view.bounds];
-//        hud.labelText = @"正在加载数据";
-//        [hud show:YES];
-//        [self.view addSubview:hud];
-//        [hud hide:YES afterDelay:3];
+
     
 
     
@@ -111,11 +106,22 @@
         [self.tableView reloadData];
         
     } withViewController:self];
-    
+}
 
-    
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
     
 }
+
+#pragma mark - event response
+// 模态推出音乐播放页面
+- (void)RightBtnTapHandle
+{
+    PlayMusicVC *playMusicVC = [[PlayMusicVC alloc] init];
+    [self presentViewController:playMusicVC animated:YES completion:nil];
+    
+}
+
 
 #pragma mark - dataSource  TableViewDelegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -136,32 +142,7 @@
     return 60;
 }
 
-//#pragma mark - netWork
-//- (BOOL)isnetWork
-//{
-//    Reachability *reach = [Reachability reachabilityWithHostName:@"www.baidu.com"];
-//    BOOL isnetwork;
-//    switch ([reach currentReachabilityStatus]) {
-//        case NotReachable:
-//            NSLog(@"没网络");
-//            isnetwork = NO;
-//            break;
-//        case ReachableViaWiFi:
-////            NSLog(@"");
-//            
-//            isnetwork = YES;
-//            break;
-//        case ReachableViaWWAN:
-////            NSLog(@"没网络");
-//            
-//            isnetwork = YES;
-//            break;
-//            
-//        default:
-//            break;
-//    }
-//    return isnetwork;
-//}
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -173,19 +154,7 @@
 }
 
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    
-}
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
