@@ -46,14 +46,13 @@
     [MusicAudioManager shareManager].delegate = self;
     
     [self drawUI];
-    // 利用NSTimer 旋转
-//    [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(rotateAnimation) userInfo:nil repeats:YES];
+
     
     // 更新数据
     [self reloadData];
     
-    // 音乐播放
-    [self musicPlay];
+    
+
     
 }
 - (void)didReceiveMemoryWarning {
@@ -130,11 +129,7 @@
     
     [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
 }
-// 旋转动画
-//- (void)rotateAnimation
-//{
-//    self.rotateImage.transform = CGAffineTransformRotate(self.rotateImage.transform, M_PI / 360);
-//}
+
 // 计时器 控制时间label  时间slider
 - (void)timerAction
 {
@@ -145,14 +140,12 @@
     self.leftTimeLabel.text = [NSString stringWithFormat:@"%ld:%ld", minute, second];
     
     NSInteger musicDuration = [self.music.duration integerValue];
-    if (!(musicDuration == 0 && secondT == 0)) {
-        NSInteger leftT = (NSInteger)(musicDuration - secondT + 0.5) / 1000;
-        NSInteger leftMinute = leftT / 60;
-        NSInteger leftSecond = leftT % 60;
-        self.rightTimeLabel.text = [NSString stringWithFormat:@"-%ld:%ld", leftMinute, leftSecond];
-    }
-    
-//    self.timeSlider.value = secondT;
+
+    NSInteger leftT = (NSInteger)(musicDuration - secondT + 0.5) / 1000;
+    NSInteger leftMinute = leftT / 60;
+    NSInteger leftSecond = leftT % 60;
+    self.rightTimeLabel.text = [NSString stringWithFormat:@"-%ld:%ld", leftMinute, leftSecond];
+
     
     LrcModel *lm = [LrcModel shareLRC];
     NSInteger row = [lm returnNumberWithCurrentTime:secondT];
@@ -165,8 +158,14 @@
 // 刷新歌词单例中的数组
 - (void)reloadData
 {
+    // 获取通知中心的单例
+    NSNotificationCenter *notificationC = [NSNotificationCenter defaultCenter];
+    [notificationC addObserver:self selector:@selector(getNotificationHandle:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+    
     LrcModel *lm = [LrcModel shareLRC];
     [lm parserWithString:self.music.lyric];
+    
+    [self.lrcTV reloadData];
     
     // 使用单例类 加载音乐播放器
     
@@ -180,27 +179,10 @@
     }
     
 }
-// 音乐播放方法
-- (void)musicPlay
+- (void)reloadModel
 {
-//    NSString *path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
-//    NSString *filePath = [path stringByAppendingPathComponent:@"songs"];
-//    
-//    NSString *songPath = [filePath stringByAppendingFormat:@"/%@.mp3", self.music.name];
-//    NSData *data = [NSData dataWithContentsOfFile:songPath];
-//    if (data) {
-//    }
-//    
-//    NSURL *mp3Url = [NSURL URLWithString:self.music.mp3Url];
-//    dispatch_queue_t concurrent = dispatch_queue_create("downloadMusic", DISPATCH_QUEUE_CONCURRENT);
-//    dispatch_async(concurrent, ^{
-//        NSData *musicData = [NSData dataWithContentsOfURL:mp3Url];
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            self.player = [[AVAudioPlayer alloc] initWithData:musicData error:nil];
-//            [self.player play];
-//        });
-//        
-//    });
+    self.music = [[MusicManager shareManager] returnModelWithIndexpath:self.currentIndex];
+    [self viewDidLoad];
 }
 
 #pragma mark - event response
@@ -245,6 +227,8 @@
         self.currentIndex = [[MusicManager shareManager] returnModelNumber] - 1;
     }
     [self reloadData];
+    [self reloadModel];
+    
 }
 - (void)nextBtnTapHandle:(UIButton *)button
 {
@@ -253,6 +237,7 @@
         self.currentIndex = 0;
     }
     [self reloadData];
+    [self reloadModel];
 }
 // SoundSlider响应方法
 - (void)soundSliderValueChangeHandle:(UISlider *)soundSlider
@@ -268,15 +253,21 @@
     [mam seekToTimePlay:timeSlider.value];
     [mam play];
 }
+#pragma mark - notificationCenter Method
+- (void)getNotificationHandle:(NSNotificationCenter *)notifi
+{
+    [self nextBtnTapHandle:nil];
+}
 
 #pragma mark - setter and getter
 - (UIImageView *)backImageView
 {
     if (_backImageView == nil) {
         _backImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-        NSURL *blurPicUrl = [NSURL URLWithString:self.music.blurPicUrl];
-        [_backImageView sd_setImageWithURL:blurPicUrl];
+        
     }
+    NSURL *blurPicUrl = [NSURL URLWithString:self.music.blurPicUrl];
+    [_backImageView sd_setImageWithURL:blurPicUrl];
     return _backImageView;
 }
 - (UIScrollView *)scrollView
@@ -316,14 +307,15 @@
 {
     if (_rotateImage == nil) {
         _rotateImage = [[UIImageView alloc] initWithFrame:CGRectMake((kScreenWidth - (kScreenHeight / 9 * 4 - 80)) / 2, 40, kScreenHeight / 9 * 4 - 80, kScreenHeight / 9 * 4 - 80)];
-        NSURL *rotateImageUrl = [NSURL URLWithString:self.music.picUrl];
-        [_rotateImage sd_setImageWithURL:rotateImageUrl];
+        
         _rotateImage.backgroundColor = [UIColor redColor];
         _rotateImage.layer.cornerRadius = (kScreenHeight / 9 * 4 - 80) / 2;
         _rotateImage.clipsToBounds = YES;
         _rotateImage.layer.borderColor = [UIColor lightGrayColor].CGColor;
         _rotateImage.layer.borderWidth = 1.5;
     }
+    NSURL *rotateImageUrl = [NSURL URLWithString:self.music.picUrl];
+    [_rotateImage sd_setImageWithURL:rotateImageUrl];
     return _rotateImage;
 }
 
@@ -373,8 +365,6 @@
     }
     NSInteger time = [self.music.duration intValue];
     
-    
-    
     NSInteger leftT = time / 1000;
     NSInteger leftMinute = leftT / 60;
     NSInteger leftSecond = leftT % 60;
@@ -388,23 +378,25 @@
     if (_titleLabel == nil) {
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((kScreenWidth - 160) / 2 , 70, 160, 30)];
         _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.text = self.music.name;
+        
         _titleLabel.font = [UIFont systemFontOfSize:18];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.textColor = [UIColor blackColor];
     }
+    _titleLabel.text = self.music.name;
     return _titleLabel;
 }
 - (UILabel *)singerLabel
 {
     if (_singerLabel == nil) {
         _singerLabel = [[UILabel alloc] initWithFrame:CGRectMake((kScreenWidth - 130) / 2, 110, 130, 30)];
-        _singerLabel.text = self.music.singer;
+        
         _singerLabel.textAlignment = NSTextAlignmentCenter;
         _singerLabel.textColor = [UIColor grayColor];
         _singerLabel.font = [UIFont systemFontOfSize:14];
         
     }
+    _singerLabel.text = self.music.singer;
     return _singerLabel;
 }
 
@@ -413,12 +405,13 @@
     if (_timeSlider == nil) {
         _timeSlider = [[UISlider alloc] initWithFrame:CGRectMake(0, kScreenHeight / 9 * 4 - 10, kScreenWidth, 20)];
         _timeSlider.backgroundColor = [UIColor clearColor];
-        _timeSlider.maximumValue = [self.music.duration floatValue] / 1000;
+        
         [_timeSlider setThumbImage:[UIImage imageNamed:@"thumb@2x.png"] forState:UIControlStateNormal];
         _timeSlider.minimumTrackTintColor = [UIColor redColor];
         _timeSlider.value = 0;
         [_timeSlider addTarget:self action:@selector(timeSliderValueChangeHandle:) forControlEvents:UIControlEventValueChanged];
     }
+    _timeSlider.maximumValue = [self.music.duration floatValue] / 1000;
     return _timeSlider;
 }
 - (UIButton *)lastSongBtn

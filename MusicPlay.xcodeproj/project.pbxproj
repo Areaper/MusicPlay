@@ -497,6 +497,11 @@
 					3F1A9CD31C50B29F00131664 = {
 						CreatedOnToolsVersion = 7.0.1;
 						DevelopmentTeam = PQX5RPWM77;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					3F1A9CEC1C50B29F00131664 = {
 						CreatedOnToolsVersion = 7.0.1;

@@ -32,9 +32,53 @@
     if (self.avplayer.currentItem) {
         [self.avplayer.currentItem removeObserver:self forKeyPath:@"status"];
     }
-    AVPlayerItem *item = [[AVPlayerItem alloc] initWithURL:[NSURL URLWithString:musicUrl]];
-    [item addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-    [self.avplayer replaceCurrentItemWithPlayerItem:item];
+    
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+    
+    NSString *filePath = [libraryPath stringByAppendingPathComponent:@"Songs"];
+    
+    [fm createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:NULL];
+    
+    NSString *songName = [musicUrl substringFromIndex:60];
+    
+    NSString *songPath = [filePath stringByAppendingFormat:@"/%@", songName];
+    if ([fm fileExistsAtPath:songPath]) {
+        NSURL *localURL = [NSURL fileURLWithPath:songPath];
+//        AVPlayerItem *item = [[AVPlayerItem alloc] initWithURL:localURL];
+        AVAsset *asset = [AVAsset assetWithURL:localURL];
+//        NSLog(@"%@", localURL);
+        AVPlayerItem *item = [[AVPlayerItem alloc] initWithAsset:asset];
+        [item addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+        [self.avplayer replaceCurrentItemWithPlayerItem:item];
+    }
+    else
+    {
+        dispatch_queue_t concurrent = dispatch_queue_create("concurrent", DISPATCH_QUEUE_CONCURRENT);
+        
+        
+        
+        dispatch_async(concurrent, ^{
+            NSData *data = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:musicUrl]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [fm createFileAtPath:songPath contents:data attributes:nil];
+                
+            });
+        });
+        
+        NSLog(@"%@", songPath);
+        
+        
+        
+        AVAsset *asset = [AVAsset assetWithURL:[NSURL URLWithString:musicUrl]];
+        AVPlayerItem *item = [[AVPlayerItem alloc] initWithAsset:asset];
+        [item addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+        [self.avplayer replaceCurrentItemWithPlayerItem:item];
+    }
+    
     
     
 }
@@ -42,6 +86,7 @@
 {
     if (!_avplayer) {
         _avplayer = [[AVPlayer alloc] init];
+        
     }
     return _avplayer;
 }
@@ -115,6 +160,12 @@
     NSInteger second = self.avplayer.currentTime.value / self.avplayer.currentTime.timescale;
     return second;
 }
+
+//- (void)getNotificationAction:(NSNotification *)notifi
+//{
+//    
+//}
+
 
 
 @end
