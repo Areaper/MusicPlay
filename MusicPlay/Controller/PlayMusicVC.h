@@ -11,5 +11,6 @@
 
 @interface PlayMusicVC : UIViewController
 @property (nonatomic, strong) MusicModel *music;
+@property (nonatomic, assign) NSInteger currentIndex;
 
 @end

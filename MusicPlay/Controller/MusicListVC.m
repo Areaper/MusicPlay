@@ -153,7 +153,7 @@
     PlayMusicVC *playMusicVC = [[PlayMusicVC alloc] init];
     MusicManager *musicManager = [MusicManager shareManager];
     playMusicVC.music = [musicManager returnModelWithIndexpath:indexPath.row];
-    
+    playMusicVC.currentIndex = indexPath.row;
     [self presentViewController:playMusicVC animated:YES completion:nil];
 }
 

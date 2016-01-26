@@ -58,6 +58,7 @@
 		3F1A9D781C50B76600131664 /* UIImageView+HighlightedWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D661C50B76600131664 /* UIImageView+HighlightedWebCache.m */; settings = {ASSET_TAGS = (); }; };
 		3F1A9D791C50B76600131664 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D681C50B76600131664 /* UIImageView+WebCache.m */; settings = {ASSET_TAGS = (); }; };
 		3F1A9D7A1C50B76600131664 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9D6A1C50B76600131664 /* UIView+WebCacheOperation.m */; settings = {ASSET_TAGS = (); }; };
+		3F8C48C71C571602001388C9 /* MusicAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8C48C61C571602001388C9 /* MusicAudioManager.m */; settings = {ASSET_TAGS = (); }; };
 		3F9DEF651C51BF7B00ED3411 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9DEF641C51BF7B00ED3411 /* UIViewController+HUD.m */; settings = {ASSET_TAGS = (); }; };
 		3F9DEF681C51C89700ED3411 /* MusicManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F9DEF671C51C89700ED3411 /* MusicManager.m */; settings = {ASSET_TAGS = (); }; };
 		3FCD89A01C55C50600D8CF17 /* PlayMusicVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCD899E1C55C50600D8CF17 /* PlayMusicVC.m */; settings = {ASSET_TAGS = (); }; };
@@ -166,6 +167,8 @@
 		3F1A9D681C50B76600131664 /* UIImageView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WebCache.m"; sourceTree = "<group>"; };
 		3F1A9D691C50B76600131664 /* UIView+WebCacheOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+WebCacheOperation.h"; sourceTree = "<group>"; };
 		3F1A9D6A1C50B76600131664 /* UIView+WebCacheOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+WebCacheOperation.m"; sourceTree = "<group>"; };
+		3F8C48C51C571602001388C9 /* MusicAudioManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicAudioManager.h; sourceTree = "<group>"; };
+		3F8C48C61C571602001388C9 /* MusicAudioManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MusicAudioManager.m; sourceTree = "<group>"; };
 		3F9DEF631C51BF7B00ED3411 /* UIViewController+HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+HUD.h"; sourceTree = "<group>"; };
 		3F9DEF641C51BF7B00ED3411 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
 		3F9DEF661C51C89700ED3411 /* MusicManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicManager.h; sourceTree = "<group>"; };
@@ -308,6 +311,8 @@
 		3F1A9D0D1C50B2FF00131664 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				3F8C48C51C571602001388C9 /* MusicAudioManager.h */,
+				3F8C48C61C571602001388C9 /* MusicAudioManager.m */,
 				3F9DEF661C51C89700ED3411 /* MusicManager.h */,
 				3F9DEF671C51C89700ED3411 /* MusicManager.m */,
 				3F9DEF631C51BF7B00ED3411 /* UIViewController+HUD.h */,
@@ -655,6 +660,7 @@
 				3F9DEF651C51BF7B00ED3411 /* UIViewController+HUD.m in Sources */,
 				3F1A9D6E1C50B76600131664 /* SDWebImageCompat.m in Sources */,
 				3F1A9D6C1C50B76600131664 /* NSData+ImageContentType.m in Sources */,
+				3F8C48C71C571602001388C9 /* MusicAudioManager.m in Sources */,
 				3F1A9D471C50B67600131664 /* Reachability.m in Sources */,
 				3F1A9D6B1C50B76600131664 /* MKAnnotationView+WebCache.m in Sources */,
 				3F1A9D6D1C50B76600131664 /* SDImageCache.m in Sources */,

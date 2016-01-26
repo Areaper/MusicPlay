@@ -2,11 +2,13 @@
 #import "PlayMusicVC.h"
 #import "UIImageView+WebCache.h"
 #import "LrcModel.h"
+#import "MusicAudioManager.h"
+#import "MusicManager.h"
 #import <AVFoundation/AVFoundation.h>
 #define kScreenHeight self.view.bounds.size.height
 #define kScreenWidth self.view.bounds.size.width
 
-@interface PlayMusicVC ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface PlayMusicVC ()<UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, MusicAudioManagerDelegate>
 
 @property (nonatomic, strong) NSMutableArray *setBtnArray; // 存放设置的button
 
@@ -29,28 +31,29 @@
 
 @property (nonatomic, strong) NSMutableArray *lrcArr; // 存放每条歌词的数组
 
-@property (nonatomic, strong) AVAudioPlayer *player;
-
-
 
 @end
 
 @implementation PlayMusicVC
 
 #pragma mark - life circle
+
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    // 把VC设置成单例的代理
+    [MusicAudioManager shareManager].delegate = self;
+    
     [self drawUI];
     // 利用NSTimer 旋转
-    [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(rotateAnimation) userInfo:nil repeats:YES];
+//    [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(rotateAnimation) userInfo:nil repeats:YES];
     
     // 更新数据
     [self reloadData];
     
     // 音乐播放
     [self musicPlay];
-    
-    
     
 }
 - (void)didReceiveMemoryWarning {
@@ -77,14 +80,19 @@
     LrcModel *lm = [LrcModel shareLRC];
     cell.textLabel.textColor = [UIColor whiteColor];
     cell.textLabel.text = [lm returnLrcWithNumber:indexPath.row];
-    cell.textLabel.font = [UIFont systemFontOfSize:12];
+    cell.textLabel.font = [UIFont systemFontOfSize:14];
     cell.backgroundColor = [UIColor clearColor];
     cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     cell.textLabel.highlightedTextColor = [UIColor redColor];
     cell.selectedBackgroundView = [UIView new];
     return cell;
 }
-//- (void)ta
+#pragma mark - MusicAudioManagerDelegate
+-(void)audioPlayWithProgress:(float)progress
+{
+    self.timeSlider.value = progress;
+    self.rotateImage.transform = CGAffineTransformRotate(self.rotateImage.transform, M_PI / 360);
+}
 
 
 #pragma mark - private method
@@ -123,31 +131,31 @@
     [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
 }
 // 旋转动画
-- (void)rotateAnimation
-{
-    self.rotateImage.transform = CGAffineTransformRotate(self.rotateImage.transform, M_PI / 360);
-}
+//- (void)rotateAnimation
+//{
+//    self.rotateImage.transform = CGAffineTransformRotate(self.rotateImage.transform, M_PI / 360);
+//}
 // 计时器 控制时间label  时间slider
 - (void)timerAction
 {
-    NSInteger currenT = (NSInteger)(self.player.currentTime + 0.5);
+    NSInteger secondT = [[MusicAudioManager shareManager] returnCurrentTime];
+    NSInteger currenT = (NSInteger)(secondT + 0.5);
     NSInteger minute = currenT / 60;
     NSInteger second = currenT % 60;
     self.leftTimeLabel.text = [NSString stringWithFormat:@"%ld:%ld", minute, second];
     
-    if (!(self.player.duration == 0 && self.player.currentTime == 0)) {
-        NSInteger leftT = (NSInteger)(self.player.duration - self.player.currentTime + 0.5);
+    NSInteger musicDuration = [self.music.duration integerValue];
+    if (!(musicDuration == 0 && secondT == 0)) {
+        NSInteger leftT = (NSInteger)(musicDuration - secondT + 0.5) / 1000;
         NSInteger leftMinute = leftT / 60;
         NSInteger leftSecond = leftT % 60;
         self.rightTimeLabel.text = [NSString stringWithFormat:@"-%ld:%ld", leftMinute, leftSecond];
     }
     
-    self.timeSlider.maximumValue = (float)self.player.duration;
-    self.timeSlider.minimumValue = 0;
-    self.timeSlider.value = currenT;
+//    self.timeSlider.value = secondT;
     
     LrcModel *lm = [LrcModel shareLRC];
-    NSInteger row = [lm returnNumberWithCurrentTime:self.player.currentTime];
+    NSInteger row = [lm returnNumberWithCurrentTime:secondT];
     if (row) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
         [self.lrcTV selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
@@ -159,29 +167,40 @@
 {
     LrcModel *lm = [LrcModel shareLRC];
     [lm parserWithString:self.music.lyric];
+    
+    // 使用单例类 加载音乐播放器
+    
+    MusicManager *mm = [MusicManager shareManager];
+    self.music = [mm returnModelWithIndexpath:self.currentIndex];
+    
+    // 使用单例类 加载音乐播放器
+    // 每次传进来不一样的时候在去重新音频
+    if (![[MusicAudioManager shareManager] isplayCurrentAudioWithURL:self.music.mp3Url]) {
+        [[MusicAudioManager shareManager] setMusicAudioWithMusicUrl:self.music.mp3Url];
+    }
+    
 }
 // 音乐播放方法
 - (void)musicPlay
 {
-    NSString *path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
-    NSString *filePath = [path stringByAppendingPathComponent:@"songs"];
-    
-    NSString *songPath = [filePath stringByAppendingFormat:@"/%@.mp3", self.music.name];
-    NSData *data = [NSData dataWithContentsOfFile:songPath];
-    if (data) {
-//        self.player = 
-    }
-    
-    NSURL *mp3Url = [NSURL URLWithString:self.music.mp3Url];
-    dispatch_queue_t concurrent = dispatch_queue_create("downloadMusic", DISPATCH_QUEUE_CONCURRENT);
-    dispatch_async(concurrent, ^{
-        NSData *musicData = [NSData dataWithContentsOfURL:mp3Url];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.player = [[AVAudioPlayer alloc] initWithData:musicData error:nil];
-            [self.player play];
-        });
-        
-    });
+//    NSString *path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+//    NSString *filePath = [path stringByAppendingPathComponent:@"songs"];
+//    
+//    NSString *songPath = [filePath stringByAppendingFormat:@"/%@.mp3", self.music.name];
+//    NSData *data = [NSData dataWithContentsOfFile:songPath];
+//    if (data) {
+//    }
+//    
+//    NSURL *mp3Url = [NSURL URLWithString:self.music.mp3Url];
+//    dispatch_queue_t concurrent = dispatch_queue_create("downloadMusic", DISPATCH_QUEUE_CONCURRENT);
+//    dispatch_async(concurrent, ^{
+//        NSData *musicData = [NSData dataWithContentsOfURL:mp3Url];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            self.player = [[AVAudioPlayer alloc] initWithData:musicData error:nil];
+//            [self.player play];
+//        });
+//        
+//    });
 }
 
 #pragma mark - event response
@@ -191,7 +210,7 @@
 }
 - (void)backButtonTapHandle:(UIButton *)button
 {
-    [self.player stop];
+//    [self.player stop];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 - (void)SetBtnTapHandle:(UIButton *)button
@@ -202,15 +221,52 @@
     button.selected = YES;
     button.tintColor = [UIColor clearColor]; // 默认背景色是蓝色, 改成透明的
 }
+// 播放暂停点击事件
 - (void)playBtnTapHandle:(UIButton *)button
 {
-    if ([self.player isPlaying]) {
-        [self.player pause];
+    MusicAudioManager *mam = [MusicAudioManager shareManager];
+    
+    if (mam.isPlaying == YES) {
+        [mam pause];
+        [button setImage:[[UIImage imageNamed:@"play"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+        [button setImage:[UIImage imageNamed:@"play-h"] forState:UIControlStateHighlighted];
     }
     else
     {
-        [self.player play];
+        [mam play];
+        [button setImage:[[UIImage imageNamed:@"pause"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+        [button setImage:[UIImage imageNamed:@"pause-h"] forState:UIControlStateHighlighted];
     }
+}
+- (void)forwardBtnTapHandle:(UIButton *)button
+{
+    self.currentIndex--;
+    if (self.currentIndex < 0) {
+        self.currentIndex = [[MusicManager shareManager] returnModelNumber] - 1;
+    }
+    [self reloadData];
+}
+- (void)nextBtnTapHandle:(UIButton *)button
+{
+    self.currentIndex++;
+    if (self.currentIndex > [[MusicManager shareManager] returnModelNumber] - 1) {
+        self.currentIndex = 0;
+    }
+    [self reloadData];
+}
+// SoundSlider响应方法
+- (void)soundSliderValueChangeHandle:(UISlider *)soundSlider
+{
+    [[MusicAudioManager shareManager] setVolume:soundSlider.value];
+    
+}
+// timeSlider响应方法
+- (void)timeSliderValueChangeHandle:(UISlider *)timeSlider
+{
+    MusicAudioManager *mam = [MusicAudioManager shareManager];
+    [mam pause];
+    [mam seekToTimePlay:timeSlider.value];
+    [mam play];
 }
 
 #pragma mark - setter and getter
@@ -299,7 +355,7 @@
     if (_leftTimeLabel == nil) {
         _leftTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, 70, 20)];
         _leftTimeLabel.backgroundColor = [UIColor clearColor];
-        _leftTimeLabel.text = @"-0:00";
+        _leftTimeLabel.text = @"0:0";
         _leftTimeLabel.textAlignment = NSTextAlignmentCenter;
         _leftTimeLabel.textColor = [UIColor blackColor];
         _leftTimeLabel.font = [UIFont systemFontOfSize:12];
@@ -357,9 +413,11 @@
     if (_timeSlider == nil) {
         _timeSlider = [[UISlider alloc] initWithFrame:CGRectMake(0, kScreenHeight / 9 * 4 - 10, kScreenWidth, 20)];
         _timeSlider.backgroundColor = [UIColor clearColor];
+        _timeSlider.maximumValue = [self.music.duration floatValue] / 1000;
         [_timeSlider setThumbImage:[UIImage imageNamed:@"thumb@2x.png"] forState:UIControlStateNormal];
         _timeSlider.minimumTrackTintColor = [UIColor redColor];
         _timeSlider.value = 0;
+        [_timeSlider addTarget:self action:@selector(timeSliderValueChangeHandle:) forControlEvents:UIControlEventValueChanged];
     }
     return _timeSlider;
 }
@@ -370,6 +428,7 @@
         _lastSongBtn.frame = CGRectMake(45, 150, 30, 20);
         _lastSongBtn.backgroundColor = [UIColor clearColor];
         [_lastSongBtn setImage:[[UIImage imageNamed:@"rewind.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+        [_lastSongBtn addTarget:self action:@selector(forwardBtnTapHandle:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _lastSongBtn;
 }
@@ -378,7 +437,7 @@
     if (_playBtn == nil) {
         _playBtn = [UIButton buttonWithType:UIButtonTypeSystem];
         _playBtn.frame = CGRectMake((kScreenWidth - 20) / 2 , 150, 20, 20);
-        [_playBtn setImage:[[UIImage imageNamed:@"play.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+        [_playBtn setImage:[[UIImage imageNamed:@"pause"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
         [_playBtn addTarget:self action:@selector(playBtnTapHandle:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _playBtn;
@@ -389,6 +448,7 @@
         _nextBtn = [UIButton buttonWithType:UIButtonTypeSystem];
         _nextBtn.frame = CGRectMake(kScreenWidth - 75, 150, 30, 20);
         [_nextBtn setImage:[[UIImage imageNamed:@"forward.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+        [_nextBtn addTarget:self action:@selector(nextBtnTapHandle:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _nextBtn;
 }
@@ -402,6 +462,12 @@
         _soundSlider.maximumTrackTintColor = [UIColor blackColor];
         _soundSlider.maximumValueImage = [UIImage imageNamed:@"volumehigh@2x"];
         _soundSlider.minimumValueImage = [UIImage imageNamed:@"volumelow@2x"];
+        
+        _soundSlider.maximumValue = 1;
+        _soundSlider.minimumValue = 0;
+        [_soundSlider addTarget:self action:@selector(soundSliderValueChangeHandle:) forControlEvents:UIControlEventValueChanged];
+        _soundSlider.value = 0.5;
+        [self soundSliderValueChangeHandle:_soundSlider];
     }
     return _soundSlider;
 }
