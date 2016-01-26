@@ -114,12 +114,13 @@
 }
 
 #pragma mark - event response
-// 模态推出音乐播放页面
+
 - (void)RightBtnTapHandle
 {
-    PlayMusicVC *playMusicVC = [[PlayMusicVC alloc] init];
-    [self presentViewController:playMusicVC animated:YES completion:nil];
-    
+//    PlayMusicVC *playMusicVC = [[PlayMusicVC alloc] init];
+//    [self presentViewController:playMusicVC animated:YES completion:nil];
+//
+
 }
 
 
@@ -147,10 +148,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[[[MusicManager shareManager] returnModelWithIndexpath:indexPath.row] blurPicUrl]]];
-    
-    
     // 点击之后 会有一个灰色渐变效果
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    PlayMusicVC *playMusicVC = [[PlayMusicVC alloc] init];
+    MusicManager *musicManager = [MusicManager shareManager];
+    playMusicVC.music = [musicManager returnModelWithIndexpath:indexPath.row];
+    
+    [self presentViewController:playMusicVC animated:YES completion:nil];
 }
 
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F0752BF1C564F8C00EFDB26 /* LrcModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F0752BE1C564F8C00EFDB26 /* LrcModel.m */; settings = {ASSET_TAGS = (); }; };
 		3F1A9CD91C50B29F00131664 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9CD81C50B29F00131664 /* main.m */; };
 		3F1A9CDC1C50B29F00131664 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F1A9CDB1C50B29F00131664 /* AppDelegate.m */; };
 		3F1A9CE21C50B29F00131664 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F1A9CE01C50B29F00131664 /* Main.storyboard */; };
@@ -86,6 +87,8 @@
 
 /* Begin PBXFileReference section */
 		1D7217385A3CA2BBEB53CCC9 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		3F0752BD1C564F8C00EFDB26 /* LrcModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LrcModel.h; sourceTree = "<group>"; };
+		3F0752BE1C564F8C00EFDB26 /* LrcModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LrcModel.m; sourceTree = "<group>"; };
 		3F1A9CD41C50B29F00131664 /* MusicPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F1A9CD81C50B29F00131664 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3F1A9CDA1C50B29F00131664 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = MusicPlay/AppDelegate.h; sourceTree = SOURCE_ROOT; };
@@ -296,6 +299,8 @@
 			children = (
 				3FF307BD1C50CA2400C93AD3 /* MusicModel.h */,
 				3FF307BE1C50CA2400C93AD3 /* MusicModel.m */,
+				3F0752BD1C564F8C00EFDB26 /* LrcModel.h */,
+				3F0752BE1C564F8C00EFDB26 /* LrcModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -627,6 +632,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F1A9CDC1C50B29F00131664 /* AppDelegate.m in Sources */,
+				3F0752BF1C564F8C00EFDB26 /* LrcModel.m in Sources */,
 				3FF307BF1C50CA2400C93AD3 /* MusicModel.m in Sources */,
 				3F1A9D781C50B76600131664 /* UIImageView+HighlightedWebCache.m in Sources */,
 				3F1A9D791C50B76600131664 /* UIImageView+WebCache.m in Sources */,

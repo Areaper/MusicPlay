@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MusicModel.h"
 
 @interface PlayMusicVC : UIViewController
+@property (nonatomic, strong) MusicModel *music;
 
 @end

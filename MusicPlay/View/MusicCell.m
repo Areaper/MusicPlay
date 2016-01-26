@@ -83,7 +83,6 @@
     [self.picImageView sd_setImageWithURL:[NSURL URLWithString:model.picUrl]];
     self.musicNamelabel.text = model.name;
     self.singerNameLabel.text = model.singer;
- 
 }
 
 
