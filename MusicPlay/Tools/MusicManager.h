@@ -13,6 +13,12 @@ typedef void(^block1)(void);
 
 
 @interface MusicManager : NSObject
+
+// 用来存放切换时候的index
+@property (nonatomic, assign) NSInteger changeIndex;
+
+
+
 // 实例化一个单例对象
 + (instancetype)shareManager;
 // 请求网络
@@ -20,9 +26,11 @@ typedef void(^block1)(void);
 
 // 返回元素个数
 - (NSInteger)returnModelNumber;
-// 根据indexPath返回model
 
+// 根据indexPath返回model
 -(MusicModel *)returnModelWithIndexpath:(NSInteger)indexPath;
+
+
 
 
 @end

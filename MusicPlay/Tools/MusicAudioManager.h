@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "PlayMusicVC.h"
+
 
 typedef NS_ENUM(NSInteger, MusicRunMode) {
     MusicRunModeListLoop    = 0,
@@ -40,6 +42,8 @@ typedef NS_ENUM(NSInteger, MusicRunMode) {
 
 // 存储当前歌曲的URL
 @property (nonatomic, strong) NSString *currentURL;
+
+@property (nonatomic, strong) PlayMusicVC *playVC;
 
 
 

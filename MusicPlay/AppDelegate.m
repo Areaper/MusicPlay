@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "MusicListVC.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface AppDelegate ()
 
@@ -25,6 +26,9 @@
     self.window.rootViewController = nav;
     [self.window makeKeyAndVisible];
     
+    // 获取权限
+    NSError *error;
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
     
     return YES;
 }
@@ -32,6 +36,14 @@
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    
+    
+    // 挂起是获得权限
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [self becomeFirstResponder];
+    
+    
+    
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {

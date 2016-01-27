@@ -16,12 +16,17 @@
 #import "UIViewController+HUD.h"
 #import "MusicManager.h"
 #import "PlayMusicVC.h"
+#import "MusicAudioManager.h"
 
 
 
 @interface MusicListVC ()<UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) NSMutableArray *musicArr;
+
+// 全局的选择index
+@property (nonatomic, assign) NSInteger selectIndex;
+
 
 @end
 
@@ -39,13 +44,22 @@
 
 #pragma mark - lifeCircle
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSLog(@"viewWillAppear");
+    
+    self.selectIndex = [MusicManager shareManager].changeIndex;
+    MusicManager *mm = [MusicManager shareManager];
+    if (mm.returnModelNumber) {
+        [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[[MusicManager shareManager] returnModelWithIndexpath:_selectIndex].blurPicUrl]];
+    }
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"音乐播放器";
-    
-//    UISlider
-    
-    
     
     // 设置背景图片
     self.backImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -106,6 +120,18 @@
         [self.tableView reloadData];
         
     } withViewController:self];
+    
+    
+    // 获取通知中心
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectIndexNotifiHandle:) name:@"selectedIndex" object:nil];
+    
+}
+
+- (void)selectIndexNotifiHandle:(NSNotification *)notifi
+{
+    NSLog(@"%li", [notifi.object integerValue]);
+    _selectIndex = [notifi.object integerValue];
+    [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[[MusicManager shareManager] returnModelWithIndexpath:_selectIndex].picUrl]];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -117,10 +143,10 @@
 
 - (void)RightBtnTapHandle
 {
-//    PlayMusicVC *playMusicVC = [[PlayMusicVC alloc] init];
-//    [self presentViewController:playMusicVC animated:YES completion:nil];
-//
-
+    PlayMusicVC *playMusicVC = [MusicAudioManager shareManager].playVC;
+    playMusicVC.currentIndex = self.selectIndex;
+    playMusicVC.music = [[MusicManager shareManager] returnModelWithIndexpath:self.selectIndex];
+    [self presentViewController:playMusicVC animated:YES completion:nil];
 }
 
 
@@ -150,15 +176,26 @@
     [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[[[MusicManager shareManager] returnModelWithIndexpath:indexPath.row] blurPicUrl]]];
     // 点击之后 会有一个灰色渐变效果
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    PlayMusicVC *playMusicVC = [[PlayMusicVC alloc] init];
-    MusicManager *musicManager = [MusicManager shareManager];
-    playMusicVC.music = [musicManager returnModelWithIndexpath:indexPath.row];
-    playMusicVC.currentIndex = indexPath.row;
     
-    playMusicVC.block = ^(NSInteger index) {
-        [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[[[MusicManager shareManager] returnModelWithIndexpath:index] blurPicUrl]]];
-    };
-    [self presentViewController:playMusicVC animated:YES completion:nil];
+    if (self.selectIndex == indexPath.row) {
+        [self presentViewController:[MusicAudioManager shareManager].playVC animated:YES completion:nil];
+    }
+    else
+    {
+        PlayMusicVC *playMusicVC = [[PlayMusicVC alloc] init];
+        MusicManager *musicManager = [MusicManager shareManager];
+        playMusicVC.music = [musicManager returnModelWithIndexpath:indexPath.row];
+        playMusicVC.currentIndex = indexPath.row;
+        [self presentViewController:playMusicVC animated:YES completion:nil];
+    }
+    
+    
+    
+    
+//    playMusicVC.block = ^(NSInteger index) {
+//        [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[[[MusicManager shareManager] returnModelWithIndexpath:index] blurPicUrl]]];
+//    };
+    
     
     
 }

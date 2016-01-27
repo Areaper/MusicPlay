@@ -54,14 +54,7 @@
     self.currentURL = musicUrl;
     
     NSFileManager *fm = [NSFileManager defaultManager];
-    
-//    NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
-//    
-//    NSString *filePath = [libraryPath stringByAppendingPathComponent:@"Songs"];
-//    
-//    [fm createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:NULL];
-//    
-//    NSString *songName = [musicUrl substringFromIndex:60];
+
     
     NSString *songPath = [self returnSongPathWithURL:self.currentURL];
     if ([fm fileExistsAtPath:songPath]) {

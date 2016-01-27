@@ -107,6 +107,10 @@
 - (void)audioPlayEndtime
 {
     [self nextBtnTapHandle:nil];
+    
+    // 通知中心发送通知
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"selectedIndex" object:@(self.currentIndex)];
+    
 }
 
 
@@ -182,11 +186,18 @@
     MusicManager *mm = [MusicManager shareManager];
     self.music = [mm returnModelWithIndexpath:self.currentIndex];
     
+    // 单例中有个存放 正在播放歌曲的index 的属性
+    mm.changeIndex = self.currentIndex;
     // 使用单例类 加载音乐播放器
     // 每次传进来不一样的时候在去重新音频
     if (![[MusicAudioManager shareManager] isplayCurrentAudioWithURL:self.music.mp3Url]) {
         [[MusicAudioManager shareManager] setMusicAudioWithMusicUrl:self.music.mp3Url];
     }
+    
+    
+    [MusicAudioManager shareManager].playVC = self;
+    
+    
     // 取现在被选中的index
 //    NSInteger index = [[NSUserDefaults standardUserDefaults] integerForKey:@"setIndex"];
     
@@ -249,7 +260,7 @@
 }
 - (void)backButtonTapHandle:(UIButton *)button
 {
-    self.block(self.currentIndex);
+//    self.block(self.currentIndex);
     [self dismissViewControllerAnimated:YES completion:nil];
     
 }
@@ -473,10 +484,9 @@
 - (UILabel *)titleLabel
 {
     if (_titleLabel == nil) {
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((kScreenWidth - 160) / 2 , 70, 160, 30)];
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((kScreenWidth - 260) / 2 , 70, 260, 30)];
         _titleLabel.backgroundColor = [UIColor clearColor];
-        
-        _titleLabel.font = [UIFont systemFontOfSize:18];
+        _titleLabel.font = [UIFont boldSystemFontOfSize:18];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.textColor = [UIColor blackColor];
     }
@@ -486,10 +496,10 @@
 - (UILabel *)singerLabel
 {
     if (_singerLabel == nil) {
-        _singerLabel = [[UILabel alloc] initWithFrame:CGRectMake((kScreenWidth - 130) / 2, 110, 130, 30)];
+        _singerLabel = [[UILabel alloc] initWithFrame:CGRectMake((kScreenWidth - 200) / 2, 110, 200, 30)];
         
         _singerLabel.textAlignment = NSTextAlignmentCenter;
-        _singerLabel.textColor = [UIColor grayColor];
+        _singerLabel.textColor = [UIColor blackColor];
         _singerLabel.font = [UIFont systemFontOfSize:14];
         
     }
