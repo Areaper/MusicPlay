@@ -4,6 +4,7 @@
 #import "LrcModel.h"
 #import "MusicAudioManager.h"
 #import "MusicManager.h"
+
 #import <AVFoundation/AVFoundation.h>
 #define kScreenHeight self.view.bounds.size.height
 #define kScreenWidth self.view.bounds.size.width
@@ -42,12 +43,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // 把VC设置成单例的代理
+    // 把VC设置成单例的代理人
     [MusicAudioManager shareManager].delegate = self;
     
-    
+    // 将button的绘制和  UI的绘制分割开 便于后面的管理
     [self drawButton];
     
+    // 绘制UI的方法
     [self drawUI];
 
     
@@ -55,31 +57,26 @@
     [self reloadData];
     
     
-
-    
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    
-    
-    
-}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 #pragma mark - delegate method
+// 滚动方法
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    // 更新pageController的值
     self.pageController.currentPage = (scrollView.contentOffset.x + kScreenWidth / 2) / kScreenWidth;
 }
 
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    LrcModel *lm = [LrcModel shareLRC];
-    return [lm returnLrcAmont];
+    LrcModel *lm = [LrcModel shareLRC];  // 歌词对象(单例)
+    return [lm returnLrcAmont];  // 歌词tableView的row数量是歌词数
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -87,28 +84,31 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"hehe"];
     }
+    
+    // cell的绘制
     LrcModel *lm = [LrcModel shareLRC];
     cell.textLabel.textColor = [UIColor whiteColor];
-    cell.textLabel.text = [lm returnLrcWithNumber:indexPath.row];
-    cell.textLabel.font = [UIFont systemFontOfSize:14];
+    cell.textLabel.text = [lm returnLrcWithNumber:indexPath.row];  // 获取歌词
+    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.font = [UIFont systemFontOfSize:16];
     cell.backgroundColor = [UIColor clearColor];
     cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-    cell.textLabel.highlightedTextColor = [UIColor redColor];
+    cell.textLabel.highlightedTextColor = [UIColor redColor];  // 被选中的字体颜色
     cell.selectedBackgroundView = [UIView new];
     return cell;
 }
 #pragma mark - MusicAudioManagerDelegate
--(void)audioPlayWithProgress:(float)progress
+-(void)audioPlayWithProgress:(float)progress  // 定制器调用的代理方法 (一秒一次调用)
 {
     self.timeSlider.value = progress;
-    self.rotateImage.transform = CGAffineTransformRotate(self.rotateImage.transform, M_PI / 360);
+    self.rotateImage.transform = CGAffineTransformRotate(self.rotateImage.transform, M_PI / 360);  // 实现旋转动画
 }
 
 - (void)audioPlayEndtime
 {
-    [self nextBtnTapHandle:nil];
+    [self nextBtnTapHandle:nil]; // 调用 下一首button的方法
     
-    // 通知中心发送通知
+    // 通知中心发送通知  将当前歌曲的index作为参数传送
     [[NSNotificationCenter defaultCenter] postNotificationName:@"selectedIndex" object:@(self.currentIndex)];
     
 }
@@ -138,7 +138,7 @@
         [self.view bringSubviewToFront:self.setBtnArray[i]];
     }
     
-    
+    // VC中定时器
     [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
 }
 
@@ -147,35 +147,35 @@
 // 计时器 控制时间label  时间slider
 - (void)timerAction
 {
-    NSInteger secondT = [[MusicAudioManager shareManager] returnCurrentTime];
+    NSInteger secondT = [[MusicAudioManager shareManager] returnCurrentTime];  // 返回当前播放时间
     NSInteger currenT = (NSInteger)(secondT + 0.5);
     NSInteger minute = currenT / 60;
     NSInteger second = currenT % 60;
-    self.leftTimeLabel.text = [NSString stringWithFormat:@"%ld:%ld", minute, second];
+    self.leftTimeLabel.text = [NSString stringWithFormat:@"%ld:%ld", minute, second];  // 更新UI
     
     NSInteger musicDuration = [self.music.duration integerValue];
 
     NSInteger leftT = (NSInteger)(musicDuration / 1000 - secondT + 0.5);
     NSInteger leftMinute = leftT / 60;
     NSInteger leftSecond = leftT % 60;
-    self.rightTimeLabel.text = [NSString stringWithFormat:@"-%ld:%ld", leftMinute, leftSecond];
+    self.rightTimeLabel.text = [NSString stringWithFormat:@"-%ld:%ld", leftMinute, leftSecond];  // 更新UI
 
     
     LrcModel *lm = [LrcModel shareLRC];
-    NSInteger row = [lm returnNumberWithCurrentTime:secondT];
+    NSInteger row = [lm returnNumberWithCurrentTime:secondT];  // 根据时间(秒) 到歌词对象中 回去对应的 行
     if (row) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+        
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];  // 转换成NSIndexPath
+        // tableView的跳转
+        // 第二个参数 指跳到中间位置
         [self.lrcTV selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
     }
     
 }
-// 刷新歌词单例中的数组
+// 刷新数据
 - (void)reloadData
 {
-    // 获取通知中心的单例
-//    NSNotificationCenter *notificationC = [NSNotificationCenter defaultCenter];
-//    [notificationC addObserver:self selector:@selector(getNotificationHandle:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
-    
+    // 刷新歌词
     LrcModel *lm = [LrcModel shareLRC];
     [lm parserWithString:self.music.lyric];
     
@@ -184,7 +184,7 @@
     // 使用单例类 加载音乐播放器
     
     MusicManager *mm = [MusicManager shareManager];
-    self.music = [mm returnModelWithIndexpath:self.currentIndex];
+    self.music = [mm returnModelWithIndexpath:self.currentIndex]; // 刷新model
     
     // 单例中有个存放 正在播放歌曲的index 的属性
     mm.changeIndex = self.currentIndex;
@@ -194,28 +194,20 @@
         [[MusicAudioManager shareManager] setMusicAudioWithMusicUrl:self.music.mp3Url];
     }
     
-    
+    // 往单例中 记录 当前播放歌曲的 详情页面
     [MusicAudioManager shareManager].playVC = self;
     
-    
-    // 取现在被选中的index
-//    NSInteger index = [[NSUserDefaults standardUserDefaults] integerForKey:@"setIndex"];
-    
+    // 播放模式
     NSInteger index = [MusicAudioManager shareManager].runModel;
     
-//    if (!index) {
-//        // 默认是第一个
-//        ((UIButton *)(self.setBtnArray[0])).selected = YES;
-//        ((UIButton *)(self.setBtnArray[0])).tintColor = [UIColor clearColor];
-//    }
-    
-    // 用自己的单例做不需要判断
+    // 获取 播放模式对应的 button
     ((UIButton *)(self.setBtnArray[index])).selected = YES;
     ((UIButton *)(self.setBtnArray[index])).tintColor = [UIColor clearColor];
     
     
     
 }
+// 更新model的同时, 需要更新UI和歌词
 - (void)reloadModel
 {
     self.music = [[MusicManager shareManager] returnModelWithIndexpath:self.currentIndex];
@@ -234,6 +226,7 @@
     [self reloadModel];
 }
 
+// 绘制button
 - (void)drawButton
 {
     
@@ -254,6 +247,7 @@
 
 
 #pragma mark - event response
+// pageController的响应方法
 - (void)pageControlValueChange
 {
     self.scrollView.contentOffset = CGPointMake(kScreenWidth * self.pageController.currentPage, 0);
@@ -272,14 +266,7 @@
     
     // 获取当前被选中button
     NSInteger index = [_setBtnArray indexOfObject:button];
-    NSLog(@"index________%li", index);
-    
-    
-    // 用系统单例去做
-    // 用NSUserDefaults 存储数据
-//    [[NSUserDefaults standardUserDefaults] setInteger:index forKey:@"setIndex"];
-    
-    // 用自己的单例
+
     [MusicAudioManager shareManager].runModel = index;
     
     
@@ -359,14 +346,10 @@
     [mam seekToTimePlay:timeSlider.value];
     [mam play];
 }
-#pragma mark - notificationCenter Method
-//- (void)getNotificationHandle:(NSNotificationCenter *)notifi
-//{
-//    [self nextBtnTapHandle:nil];
-//}
 
 
 
+// 用懒加载绘制UI
 #pragma mark - setter and getter
 - (UIImageView *)backImageView
 {
@@ -441,7 +424,7 @@
 - (UITableView *)lrcTV
 {
     if (_lrcTV == nil) {
-        _lrcTV = [[UITableView alloc] initWithFrame:CGRectMake(kScreenWidth, 50, kScreenWidth, kScreenHeight / 9 * 4 - 50) style:UITableViewStylePlain];
+        _lrcTV = [[UITableView alloc] initWithFrame:CGRectMake(kScreenWidth, 70, kScreenWidth, kScreenHeight / 9 * 4 - 110) style:UITableViewStylePlain];
         _lrcTV.separatorStyle = UITableViewCellSeparatorStyleNone;
         _lrcTV.backgroundColor = [UIColor clearColor];
         _lrcTV.delegate = self;

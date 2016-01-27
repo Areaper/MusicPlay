@@ -19,6 +19,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    // 自定义根视图控制器
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
     MusicListVC *musicVC = [MusicListVC new];
@@ -27,7 +29,9 @@
     [self.window makeKeyAndVisible];
     
     // 获取权限
-    NSError *error;
+    NSError *error; // 用于接收错误信息  默认情况下扬声器播放
+    
+    // AVAudioSessionCategoryPlaybak 表示app在进入后台或者静音的时候, 依旧可以播放
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
     
     return YES;
@@ -38,9 +42,9 @@
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     
     
-    // 挂起是获得权限
+    // 挂起是获得权限   表示app进行注册, 可以接收远程控制事件
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    [self becomeFirstResponder];
+    [self becomeFirstResponder];  // 代理人作为第一响应者
     
     
     

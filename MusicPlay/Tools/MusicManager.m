@@ -44,7 +44,7 @@
 
 - (void)requestDataWithBlock:(block1)block withViewController:(UIViewController *)vc
 {
-    if ([self isnetWork]) {
+    if ([self isnetWork]) { // 判断网络是否连接成功
         [vc showHUDwith:@"正在加载"];
         
         dispatch_queue_t concurrent = dispatch_queue_create("concurrent1", DISPATCH_QUEUE_CONCURRENT);
@@ -90,9 +90,9 @@
 
 
 #pragma mark - netWork
-- (BOOL)isnetWork
+- (BOOL)isnetWork  // 判断网络
 {
-    Reachability *reach = [Reachability reachabilityWithHostName:@"www.baidu.com"];
+    Reachability *reach = [Reachability reachabilityWithHostName:@"www.baidu.com"]; // 通过任意网址判断网络连接
     BOOL isnetwork;
     switch ([reach currentReachabilityStatus]) {
         case NotReachable:
