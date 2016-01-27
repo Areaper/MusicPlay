@@ -21,6 +21,10 @@ AVFoundation框架 中的AVPlayer
 
 单例封装AVPlayer
 
+多线程 获取网络数据
+
+放射动画+定时器 实现图片旋转
+
 界面传值使用代理方法(注释中使用block)
 
 定时器监控播放进度 监控UI更新
