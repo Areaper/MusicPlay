@@ -7,15 +7,30 @@
 //
 
 #import <Foundation/Foundation.h>
+
+typedef NS_ENUM(NSInteger, MusicRunMode) {
+    MusicRunModeListLoop    = 0,
+    MusicRunModeRandomLoop  = 1,
+    MusicRunModeSingleLoop  = 2,
+    MusicRunModeCurrentLoop = 3
+};
+
+
+
+
 // 声明代理 代理方法
 @protocol MusicAudioManagerDelegate <NSObject>
 
 - (void)audioPlayWithProgress:(float)progress;
+// 代理方法 回到VC中 自动播放下一首
+- (void)audioPlayEndtime;
 
 @end
 
 
 @interface MusicAudioManager : NSObject
+// 对应枚举的属性 用于存储当前点击button
+@property (nonatomic, assign) MusicRunMode runModel;
 // 音量
 @property (nonatomic, assign) float volume;
 // 判断当前的状态
@@ -23,6 +38,8 @@
 // 代理人
 @property (nonatomic, weak) id<MusicAudioManagerDelegate> delegate;
 
+// 存储当前歌曲的URL
+@property (nonatomic, strong) NSString *currentURL;
 
 
 

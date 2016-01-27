@@ -9,8 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "MusicModel.h"
 
+typedef void(^Block)(NSInteger);
+
 @interface PlayMusicVC : UIViewController
 @property (nonatomic, strong) MusicModel *music;
 @property (nonatomic, assign) NSInteger currentIndex;
+@property (nonatomic, copy) Block block;
 
 @end

@@ -27,12 +27,9 @@
     });
     return manager;
 }
-- (void)setMusicAudioWithMusicUrl:(NSString *)musicUrl
+// 根据URL获取当前歌曲的路径
+- (NSString *)returnSongPathWithURL:(NSString *)url
 {
-    if (self.avplayer.currentItem) {
-        [self.avplayer.currentItem removeObserver:self forKeyPath:@"status"];
-    }
-    
     NSFileManager *fm = [NSFileManager defaultManager];
     
     NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
@@ -41,9 +38,32 @@
     
     [fm createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:NULL];
     
-    NSString *songName = [musicUrl substringFromIndex:60];
+    NSString *songName = [url substringFromIndex:60];
     
     NSString *songPath = [filePath stringByAppendingFormat:@"/%@", songName];
+    return songPath;
+    
+}
+
+
+- (void)setMusicAudioWithMusicUrl:(NSString *)musicUrl
+{
+    if (self.avplayer.currentItem) {
+        [self.avplayer.currentItem removeObserver:self forKeyPath:@"status"];
+    }
+    self.currentURL = musicUrl;
+    
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+//    NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+//    
+//    NSString *filePath = [libraryPath stringByAppendingPathComponent:@"Songs"];
+//    
+//    [fm createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:NULL];
+//    
+//    NSString *songName = [musicUrl substringFromIndex:60];
+    
+    NSString *songPath = [self returnSongPathWithURL:self.currentURL];
     if ([fm fileExistsAtPath:songPath]) {
         NSURL *localURL = [NSURL fileURLWithPath:songPath];
 //        AVPlayerItem *item = [[AVPlayerItem alloc] initWithURL:localURL];
@@ -97,6 +117,12 @@
     switch (new) {
         case AVPlayerItemStatusFailed:
             NSLog(@"AVPlayerItemStatusFailed");
+            // 删除下载的内容
+        {
+            NSFileManager *fm = [NSFileManager defaultManager];
+            [fm removeItemAtPath:[self returnSongPathWithURL:self.currentURL] error:nil];
+        }
+            
             break;
         case AVPlayerItemStatusUnknown:
             NSLog(@"AVPlayerItemStatusUnknown");
@@ -161,11 +187,20 @@
     return second;
 }
 
-//- (void)getNotificationAction:(NSNotification *)notifi
-//{
-//    
-//}
-
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioEndHandle) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+    }
+    return self;
+}
+- (void)audioEndHandle
+{
+    // 播放完成通知里 响应代理方法 回到VC处理
+    if (self.delegate && [self.delegate respondsToSelector:@selector(audioPlayEndtime)]) {
+        [_delegate audioPlayEndtime];
+    }
+}
 
 
 @end

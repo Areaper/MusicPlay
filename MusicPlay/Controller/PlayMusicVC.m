@@ -45,6 +45,9 @@
     // 把VC设置成单例的代理
     [MusicAudioManager shareManager].delegate = self;
     
+    
+    [self drawButton];
+    
     [self drawUI];
 
     
@@ -53,6 +56,14 @@
     
     
 
+    
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    
     
 }
 - (void)didReceiveMemoryWarning {
@@ -93,6 +104,11 @@
     self.rotateImage.transform = CGAffineTransformRotate(self.rotateImage.transform, M_PI / 360);
 }
 
+- (void)audioPlayEndtime
+{
+    [self nextBtnTapHandle:nil];
+}
+
 
 #pragma mark - private method
 - (void)drawUI
@@ -113,22 +129,16 @@
     [self.blurView addSubview:self.playBtn];
     [self.blurView addSubview:self.nextBtn];
     [self.blurView addSubview:self.soundSlider];
-    NSArray *normalPicname = @[@"loop", @"shuffle", @"singleloop", @"music"];
-    float space = (kScreenWidth - 40 - 25 * 4) / 3;
-    for (int i = 0; i < 4; i++) {
-        UIButton *setBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-        setBtn.backgroundColor = [UIColor clearColor];
-        [setBtn setImage:[[UIImage imageNamed:normalPicname[i]] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
-        NSString *highName = [NSString stringWithFormat:@"%@-s", normalPicname[i]];
-        [setBtn setImage:[[UIImage imageNamed:highName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateSelected];
-        setBtn.frame = CGRectMake(20 + 25 * i + space * i, kScreenHeight - 45, 25, 25);
-        [setBtn addTarget:self action:@selector(SetBtnTapHandle:) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:setBtn];
-        [self.setBtnArray addObject:setBtn];
+    
+    for (int i = 0; i < self.setBtnArray.count; i++) {
+        [self.view bringSubviewToFront:self.setBtnArray[i]];
     }
+    
     
     [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
 }
+
+
 
 // 计时器 控制时间label  时间slider
 - (void)timerAction
@@ -141,7 +151,7 @@
     
     NSInteger musicDuration = [self.music.duration integerValue];
 
-    NSInteger leftT = (NSInteger)(musicDuration - secondT + 0.5) / 1000;
+    NSInteger leftT = (NSInteger)(musicDuration / 1000 - secondT + 0.5);
     NSInteger leftMinute = leftT / 60;
     NSInteger leftSecond = leftT % 60;
     self.rightTimeLabel.text = [NSString stringWithFormat:@"-%ld:%ld", leftMinute, leftSecond];
@@ -159,8 +169,8 @@
 - (void)reloadData
 {
     // 获取通知中心的单例
-    NSNotificationCenter *notificationC = [NSNotificationCenter defaultCenter];
-    [notificationC addObserver:self selector:@selector(getNotificationHandle:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+//    NSNotificationCenter *notificationC = [NSNotificationCenter defaultCenter];
+//    [notificationC addObserver:self selector:@selector(getNotificationHandle:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     
     LrcModel *lm = [LrcModel shareLRC];
     [lm parserWithString:self.music.lyric];
@@ -177,13 +187,60 @@
     if (![[MusicAudioManager shareManager] isplayCurrentAudioWithURL:self.music.mp3Url]) {
         [[MusicAudioManager shareManager] setMusicAudioWithMusicUrl:self.music.mp3Url];
     }
+    // 取现在被选中的index
+//    NSInteger index = [[NSUserDefaults standardUserDefaults] integerForKey:@"setIndex"];
+    
+    NSInteger index = [MusicAudioManager shareManager].runModel;
+    
+//    if (!index) {
+//        // 默认是第一个
+//        ((UIButton *)(self.setBtnArray[0])).selected = YES;
+//        ((UIButton *)(self.setBtnArray[0])).tintColor = [UIColor clearColor];
+//    }
+    
+    // 用自己的单例做不需要判断
+    ((UIButton *)(self.setBtnArray[index])).selected = YES;
+    ((UIButton *)(self.setBtnArray[index])).tintColor = [UIColor clearColor];
+    
+    
     
 }
 - (void)reloadModel
 {
     self.music = [[MusicManager shareManager] returnModelWithIndexpath:self.currentIndex];
-    [self viewDidLoad];
+    [self drawUI];
+    [self reloadData];
 }
+// 按列表循环
+- (void)listRunLoop
+{
+    
+    self.currentIndex++;
+    if (self.currentIndex > [[MusicManager shareManager] returnModelNumber] - 1) {
+        self.currentIndex = 0;
+    }
+    [self reloadData];
+    [self reloadModel];
+}
+
+- (void)drawButton
+{
+    
+    NSArray *normalPicname = @[@"loop", @"shuffle", @"singleloop", @"music"];
+    float space = (kScreenWidth - 40 - 25 * 4) / 3;
+    for (int i = 0; i < 4; i++) {
+        UIButton *setBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+        setBtn.backgroundColor = [UIColor clearColor];
+        [setBtn setImage:[[UIImage imageNamed:normalPicname[i]] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+        NSString *highName = [NSString stringWithFormat:@"%@-s", normalPicname[i]];
+        [setBtn setImage:[[UIImage imageNamed:highName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateSelected];
+        setBtn.frame = CGRectMake(20 + 25 * i + space * i, kScreenHeight - 45, 25, 25);
+        [setBtn addTarget:self action:@selector(SetBtnTapHandle:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:setBtn];
+        [self.setBtnArray addObject:setBtn];
+    }
+}
+
 
 #pragma mark - event response
 - (void)pageControlValueChange
@@ -192,14 +249,29 @@
 }
 - (void)backButtonTapHandle:(UIButton *)button
 {
-//    [self.player stop];
+    self.block(self.currentIndex);
     [self dismissViewControllerAnimated:YES completion:nil];
+    
 }
 - (void)SetBtnTapHandle:(UIButton *)button
 {
     for (UIButton *btn in _setBtnArray) {
         btn.selected = NO;
     }
+    
+    // 获取当前被选中button
+    NSInteger index = [_setBtnArray indexOfObject:button];
+    NSLog(@"index________%li", index);
+    
+    
+    // 用系统单例去做
+    // 用NSUserDefaults 存储数据
+//    [[NSUserDefaults standardUserDefaults] setInteger:index forKey:@"setIndex"];
+    
+    // 用自己的单例
+    [MusicAudioManager shareManager].runModel = index;
+    
+    
     button.selected = YES;
     button.tintColor = [UIColor clearColor]; // 默认背景色是蓝色, 改成透明的
 }
@@ -232,13 +304,36 @@
 }
 - (void)nextBtnTapHandle:(UIButton *)button
 {
-    self.currentIndex++;
-    if (self.currentIndex > [[MusicManager shareManager] returnModelNumber] - 1) {
-        self.currentIndex = 0;
+    // 判断当前模式
+    NSInteger index = [MusicAudioManager shareManager].runModel;
+    switch (index) {
+        case MusicRunModeListLoop:
+            [self listRunLoop];
+            break;
+        case MusicRunModeRandomLoop:
+            self.currentIndex = arc4random() % 200;
+            [self reloadData];
+            [self reloadModel];
+            break;
+        case MusicRunModeSingleLoop:
+//            [self listRunLoop];
+            [[MusicAudioManager shareManager] setMusicAudioWithMusicUrl:nil];
+            [self reloadData];
+            break;
+        case MusicRunModeCurrentLoop:
+            [self listRunLoop];
+            break;
+            
+        default:
+            break;
     }
-    [self reloadData];
-    [self reloadModel];
+    
+    
+    
+    
 }
+
+
 // SoundSlider响应方法
 - (void)soundSliderValueChangeHandle:(UISlider *)soundSlider
 {
@@ -254,10 +349,12 @@
     [mam play];
 }
 #pragma mark - notificationCenter Method
-- (void)getNotificationHandle:(NSNotificationCenter *)notifi
-{
-    [self nextBtnTapHandle:nil];
-}
+//- (void)getNotificationHandle:(NSNotificationCenter *)notifi
+//{
+//    [self nextBtnTapHandle:nil];
+//}
+
+
 
 #pragma mark - setter and getter
 - (UIImageView *)backImageView

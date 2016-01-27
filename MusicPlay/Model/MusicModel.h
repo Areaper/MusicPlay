@@ -21,7 +21,7 @@
 @property (nonatomic, copy) NSString *artists_name;    // 作曲人
 @property (nonatomic, copy) NSString *lyric;          // 歌词
 
--(instancetype)initWithDic:(NSDictionary *)dic;
+//-(instancetype)initWithDic:(NSDictionary *)dic;
 
 + (instancetype)modelWithDic:(NSDictionary *)dic;
 

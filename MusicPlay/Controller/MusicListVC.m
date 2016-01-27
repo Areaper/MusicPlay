@@ -154,7 +154,13 @@
     MusicManager *musicManager = [MusicManager shareManager];
     playMusicVC.music = [musicManager returnModelWithIndexpath:indexPath.row];
     playMusicVC.currentIndex = indexPath.row;
+    
+    playMusicVC.block = ^(NSInteger index) {
+        [self.backImageView sd_setImageWithURL:[NSURL URLWithString:[[[MusicManager shareManager] returnModelWithIndexpath:index] blurPicUrl]]];
+    };
     [self presentViewController:playMusicVC animated:YES completion:nil];
+    
+    
 }
 
 
